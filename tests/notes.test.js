@@ -81,6 +81,21 @@ describe("Test sur les notes", () => {
         expect(res[2].content).toBe("Salut");
     });
 
+    test("Tenter d'ajouter une note sans l'attribue 'content'", async () => {
+        await expect(prisma.notes.create({
+            data: {
+                title: "Test"
+            }
+        })).rejects.toThrowError("Argument `content` is missing.");
+    });
+    test("Tenter d'ajouter une note sans l'attribue 'title'", async () => {
+        await expect(prisma.notes.create({
+            data: {
+                content: "Test"
+            }
+        })).rejects.toThrowError("Argument `content` is missing.");
+    });
+
     test("Mettre à jour une note", async () => {
         await prisma.notes.update({
             where: {
@@ -115,5 +130,13 @@ describe("Test sur les notes", () => {
         expect(res.length).toBe(1);
         expect(res).not.toContain("Course");
         expect(res).not.toContain("Faut acheter 3 oeufs, 2 steaks et 1 packet de chips")
+    });
+
+    test("Tenter de supprimer un id qui n'existe pas", async () => {
+        await expect(prisma.notes.delete({
+            where: {
+                id: 3
+            }
+        })).rejects.toThrowError("An operation failed because it depends on one or more records that were required but not found. Record to delete does not exist.");
     });
 });
